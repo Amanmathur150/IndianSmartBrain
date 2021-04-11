@@ -95,7 +95,7 @@ changeBG = () =>{
           })
           }).then(res=>res.json()).then(user =>{
             this.loadUser(user)
-            console.log(this.state.user.email)
+            
     })
     
     return boxes

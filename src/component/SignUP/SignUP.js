@@ -17,17 +17,17 @@ class SignUP extends Component{
 
     name=(event)=>{
         this.setState({name:event.target.value})
-        console.log(event.target.value)
+        
     }
 
     email=(event)=>{
         this.setState({email:event.target.value})
-        console.log(event.target.value)
+        
     }
 
     password=(event)=>{
         this.setState({password:event.target.value})
-        console.log(event.target.value)
+        
     }
 
     sumbitsignup=()=>{      

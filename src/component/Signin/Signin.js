@@ -33,7 +33,7 @@ class Signin extends Component {
                 password : this.state.password
             })
         }).then(res=>res.json()).then(user =>{
-            console.log(user)
+            
             this.props.loadUser(user)
             if (user === "Email and Password Is not valid "){
                 this.setState({message: "Email And PassWord Is invalid"})
