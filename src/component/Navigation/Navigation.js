@@ -1,26 +1,58 @@
+import {React} from "react"
+import { Link , useHistory } from "react-router-dom";
 import "./Navigation.css";
 
 
-const Navigation = ({isonSignin,  signin})=>{
-    if (isonSignin){
+
+const NavigationWithLogin = ({statusAuthenticate})=>{
+    let history = useHistory()
+    
+    
         return (
             <nav className="nav-bar" >
-                <p onClick={()=>signin("Signin")} className="f3 link dim yellow underline pa3 pointer bold">Sign Out</p>
+                <p onClick={()=>{
+                    statusAuthenticate(false)
+                    sessionStorage.setItem("isAuth",false)
+                    sessionStorage.clear()
+                    history.push("/")
+                }}
+              
+                className="f3 link dim yellow underline pa3 pointer bold">Sign Out</p>
             </nav>
         )
 
-    }
-    else{
+}
+
+
+
+
+const NavigationWithOutLogin = ()=>{
         return (
+
+            
             <nav className="nav-bar" >
-                <p onClick={()=>signin("SignUp")} className="f3 link dim yellow underline pa3 pointer bold">Sign Up</p>
-                <p onClick={()=>signin("Signin")} className="f3 link dim yellow underline pa3 pointer bold">Sign In</p>
+                
+
+                
+
+                <Link to="/">
+
+                    
+                <p  className="f3 link dim yellow underline pa3 pointer bold">Sign In</p>
+                    </Link>
+                 
+                <Link to="/signup">
+                <p className="f3 link dim yellow underline pa3 pointer bold">
+                Sign Up
+                </p>
+                </Link>
             </nav>
+              
         )
 
-    }
+    
     
 }
 
 
-export default Navigation;
+export {NavigationWithLogin,NavigationWithOutLogin};

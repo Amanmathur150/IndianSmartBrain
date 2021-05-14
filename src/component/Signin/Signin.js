@@ -1,51 +1,56 @@
-import { Component } from 'react';
+import {   React , useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import Tilt from 'react-tilt';
 import "./Signin.css"
+import "react-router-dom";
 
 
-class Signin extends Component {
-    constructor(){
-        super();
-        this.state ={
-            email: "",
-            password : "",
-            message:""
-        }
+function Signin({loadUser, statusAuthenticate }){
+    
+    let [email,setemail]= useState("") ; 
+    let  [password,setpassword]= useState("") ; 
+    let [message,setmessage] = useState("") ; 
+    let history = useHistory()
+         
+        
 
+
+    const OnEmailChange = (event) =>{
+        setemail(event.target.value)
+        
     }
 
-
-
-    OnEmailChange = (event) =>{
-        this.setState({email:event.target.value})
+    const OnPasswordChange = (event) =>{
+        setpassword(event.target.value)
     }
 
-    OnPasswordChange = (event) =>{
-        this.setState({password:event.target.value})
-    }
-
-    signIn=()=>{
-        fetch("https://polar-inlet-90495.herokuapp.com/signin",{
-            method: "post",
+    const signIn = async (cb) => {
+        
+        let res  = await fetch("https://polar-inlet-90495.herokuapp.com/signin",{
+            method: "POST",
             headers: {"Content-Type" : "application/json" },
             body: JSON.stringify({
-                email: this.state.email ,
-                password : this.state.password
+                email: email ,
+                password :password
             })
-        }).then(res=>res.json()).then(user =>{
+        }) 
+        let user = await res.json()
+        
             
-            this.props.loadUser(user)
-            if (user === "Email and Password Is not valid "){
-                this.setState({message: "Email And PassWord Is invalid"})
-            }else{
-                this.props.click("Home")
+       
+        if (user === "Email and Password Is not valid "){
+            setmessage("Email And PassWord Is invalid")
+        }else{
+            loadUser(user)
+            statusAuthenticate(true)
+            sessionStorage.setItem("isAuth",true)
+                cb()
                 
             }
-        })
-            }   
+        }
     
 
-    render(){
+    
 
         return (
             <div className="ma4 mt0 center sizes-mobiles">
@@ -58,21 +63,24 @@ class Signin extends Component {
                                 <legend className="f1 fw6 ph0 mh0">Sign In</legend>
                                 <div className="mt3">
                                     <label className="db fw6 lh-copy f3" htmlFor="email-address">Email</label>
-                                    <input onChange={this.OnEmailChange} className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="email" name="email-address"  id="email-address" />
+                                    <input onChange={OnEmailChange} className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="email" name="email-address"  id="email-address" />
                                 </div>
                                 <div className="mv3">
                                     <label className="db fw6 lh-copy f3" htmlFor="password">Password</label>
-                                    <input onChange={this.OnPasswordChange} className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="password" name="password"  id="password" />
+                                    <input onChange={OnPasswordChange} className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100" type="password" name="password"  id="password" />
                                 </div>
-                                <legend className="f3 fw4 ph0 mh0 " style={{fontWeight:"bold" , color:"rgb(170, 0, 0)"}}>{this.state.message}</legend>
+                                <legend className="f3 fw4 ph0 mh0 " style={{fontWeight:"bold" , color:"rgb(170, 0, 0)"}}>{message}</legend>
                                 
                                 </fieldset>
                                 <div className="">
-                                <input onClick={this.signIn} className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f4 dib" type="submit" value="Sign in" />
+                                <button  className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f4 dib" onClick={()=>{signIn(function(){
+                                    history.push("/welcome")
+                                })}} >Sign in</button>
                                 </div>
                                 <div className="lh-copy mt3">
-                                <p onClick={()=>{this.props.click("SignUp")}} className="f4 link dim black db pointer">Sign up</p>
-                                
+                                <Link to="/signup">
+                                <p  className="f4 link dim black db pointer">Sign up</p>
+                                </Link>
                                 </div>
                             </div>
                         </main>
@@ -82,7 +90,7 @@ class Signin extends Component {
         </div>
     )
 }
-}
+
 
 
 export default Signin;

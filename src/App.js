@@ -1,4 +1,5 @@
-import Navigation from "./component/Navigation/Navigation.js";
+import {  useEffect, useState } from "react";
+import {NavigationWithLogin , NavigationWithOutLogin} from "./component/Navigation/Navigation.js";
 import Logo from "./component/Logo/Logo.js";
 import Imageinput from "./component/Imageinput/Imageinput.js";
 import Facerecognition from "./component/Facerecognition/Facerecognition.js";
@@ -6,9 +7,15 @@ import UserRank from "./component/UserRank/UserRank.js";
 import Signin from "./component/Signin/Signin.js";
 import SignUP from "./component/SignUP/SignUP.js";
 import './App.css';
-import { BrowserRouter as Router} from "react-router-dom";
+import { BrowserRouter as Router, 
+  Switch ,
+  Route,
+ 
+  Redirect,
+  
+  } from "react-router-dom";
 import ParticleComponent from "./ParticleComponent";
-import { Component } from "react";
+
 import Particles from 'react-particles-js';
 import Bgchange from "./component/Bgchangebutton";
 import "./Font.css";
@@ -17,18 +24,19 @@ import Tittle from "./component/Tittle/Tittle"
 
 
 
-class App extends Component {
-  constructor(){
-    super();
-    this.state =  {
-      "imageURL":"" ,
-      
-      "boxes" : [] , 
-      "route" : "Signin",
-      "signin":false,
-      "bgChange" : true,
-      
-      "user":{
+let  App = ()=>{
+ 
+    
+  let [imageURL,setimageURL ]= useState("") ;
+  
+  let [boxes,setboxes] = useState([]) ;
+ 
+  let [isAuthenticate,setisAuthenticate] = useState(true)
+  let [bgChange,setbgChange] = useState(true);
+  let [facee,setface] = useState("")
+  
+  let [user,setuser] = useState(
+        {
         id:"",
         name:"",
         email: "",
@@ -36,38 +44,95 @@ class App extends Component {
         rank:0,
         face:"",
         join : "",
-       } 
-  }
-    }
-  
+      }
+      )
 
-  loadUser= (data) =>{
-    this.setState({user:{
-      id:data.id,
-      name:data.name,
-      email: data.email,
-      face:data.face,
-      entries : 0,
-      rank:data.rank,
-      join :data.join
-    }})
+      
+      let verificaionAuth = (e)=>{
+        if (e === true){
+          setisAuthenticate(true)
+        }else if (e === false){
+          setisAuthenticate(false)
+        }
+      }
+      
+      
+      let loadUser = (data = user) =>{
+        sessionStorage.setItem("data" , JSON.stringify(data))
+        let auth = sessionStorage.getItem("isAuth")
+        
+        setisAuthenticate(auth)
+        setuser(
+          { id:data.id,
+            name:data.name,
+            email: data.email,
+            face:data.face,
+            entries : 0,
+            rank:data.rank,
+            join :data.join
+          }
+          
+          )
 }
+        useEffect(()=>{
+          
+        
+        setisAuthenticate(sessionStorage.getItem("isAuth"))
+        },[isAuthenticate])
+        
+        useEffect(()=>{
+          
+          let auth = sessionStorage.getItem("isAuth")
+          let items = JSON.parse(sessionStorage.getItem("data"))
+          if  (!items){
+            setuser(
+              { id:user.id,
+                name:user.name,
+                email: user.email,
+                face:user.face,
+                entries : 0,
+                rank:user.rank,
+                join :user.join
+              }
+              )
+            }
+            else{
+              setisAuthenticate(auth)
+             
+              setuser(
+              { id:items.id,
+                name:items.name,
+                email: items.email,
+                face:items.face,
+                entries : 0,
+                rank:items.rank,
+                join :items.join
+              }
+            )
+          }
+    
+         
+         
+        },[])
 
-changeBG = () =>{
-  if (this.state.bgChange === true){
-    this.setState({bgChange: false})
+      
+       
+    
+    let changeBG = () =>{
+      if (bgChange === true){
+    setbgChange(false)
     document.body.style.background = 'linear-gradient( 89deg,blue ,skyblue )'
-}
+  }
     
   else{
-    this.setState({bgChange: true})
+    setbgChange(true)
      
     document.body.style.background = 'linear-gradient(89deg , red , rgb(23, 201, 255)' ; 
     
+     }
   }
-}
 
-  boxSizing=(data)=>{
+ let boxSizing=(data)=>{
       const img = document.getElementById("boxing")
       const width = Number(img.width)
       const height = Number(img.height)
@@ -81,71 +146,55 @@ changeBG = () =>{
         top : box.top_row * height,
         right : width - (box.right_col * width),
         bottom : height - (box.bottom_row * height ),
-          left : box.left_col * width,
+          left : box.left_col * width
         }
     })
-    this.setState({face:boxes.length})
+    setface(boxes.length)
     fetch("https://polar-inlet-90495.herokuapp.com/faceupdate", {
           method:"put",
           headers:{"Content-Type":"application/json"},
           body : JSON.stringify({
-            face:this.state.face,
-            // username:this.state.user.name,
-            email: this.state.user.email
+            face:facee,
+            
+            email: user.email
           })
           }).then(res=>res.json()).then(user =>{
-            this.loadUser(user)
-            
+            loadUser(user)
+           
     })
     
     return boxes
   }
 
-  facedetect=(box)=>{
+  let facedetect=(box)=>{
     
-    this.setState({boxes:box})
+    setboxes(box)
 
   }
 
-  OnChange = (event) =>{
-    this.setState({imageURL:event.target.value})
+  let OnChange = (event) =>{
+    setimageURL(event.target.value)
   }
 
-  OnButtonClick=()=>{
+  let OnButtonClick=()=>{
     fetch("https://polar-inlet-90495.herokuapp.com/apicall" , {
       method: "post",
       headers : {"Content-Type" : "application/json"},
       body:JSON.stringify({
-        ImageURL : this.state.imageURL
+        ImageURL : imageURL
       })
     }).then(res=>res.json()).then(response=>{
-      console.log(response)
-      this.facedetect(this.boxSizing(response))
+      
+      facedetect(boxSizing(response))
     }
     ).catch(err=>console.log(err))
     
 }
-
-  routeChange=(route)=>{
-    if (route === "Signin") {
-      this.setState({signin: false})
-      this.setState({imageURL : ""})
-      
-    }else if (route === "SignUp") {
-      this.setState({signin:false})
-    } else if (route === "Home") {
-      this.setState({signin:true})
-    } 
-    this.setState({route: route})
-    
-  }
-
-  render(){
-     
-  return (
+return (
+    <Router>
+      <Switch>
     <div className="App">
-
-{this.state.bgChange ? 
+    {bgChange ? 
   <Particles style={{position: "fixed",
           top: 0,
           left: 0,
@@ -165,7 +214,7 @@ changeBG = () =>{
             	}} />
 :
 
-<Router>
+ 
       <div
         style={{
           position: "fixed",
@@ -179,6 +228,7 @@ changeBG = () =>{
         <ParticleComponent />
         <div
           style={{
+
             position: "fixed",
             top: 0,
             left: 0,
@@ -188,42 +238,73 @@ changeBG = () =>{
           }}
         >
           
-         
         </div>
       </div>
-    </Router>
+  
 
 }
-
     
     
-    <Navigation isonSignin={this.state.signin} signin={this.routeChange} />
-    <Logo />
+          <Route exact path = "/">
+
+              <NavigationWithOutLogin  />
+              <Logo />
+              <Bgchange changeBG={changeBG} />
+              <Tittle />
+              <Signin statusAuthenticate={verificaionAuth} loadUser={loadUser}  />
+
+          </Route>
+
+
+      
+        <Route exact path = "/signup" >
+        <NavigationWithOutLogin  />
+        <Logo />
+        
+        <Bgchange changeBG={changeBG} />
+        <Tittle />
+        
+              <SignUP statusAuthenticate={verificaionAuth} loadUser={loadUser}  />
+        </Route>
+
+      
+
+     
+        <Route exact path="/welcome">
+        {isAuthenticate ? 
+        
+        <div>
+        <NavigationWithLogin statusAuthenticate={verificaionAuth} />
+        <Logo />
     
-    <Bgchange changeBG={this.changeBG} />
-    <Tittle />
-     {this.state.route === "Signin" ?
+        <Bgchange changeBG={changeBG} />
+        <Tittle />
 
-        <Signin loadUser={this.loadUser} click ={this.routeChange} />
+        <UserRank username={user.name} userface={user.face}  userRank={user.rank} />
+        <Imageinput OnChange={OnChange} OnButtonClick={OnButtonClick} />
 
-         : (this.state.route === "SignUp") ?
-
-          <SignUP loadUser={this.loadUser} click ={this.routeChange} />
+        <Facerecognition imageURL={imageURL} boxes={boxes} />
+        </div>
         :
+        
+          <Redirect to="/" /> 
+        
+          
+          
+        }
 
-          <div>
-          <UserRank userRank={this.state.user.rank} userface={this.state.user.face} username={this.state.user.name} />
-          <Imageinput OnChange={this.OnChange} OnButtonClick={this.OnButtonClick} />
-
-          <Facerecognition imageURL={this.state.imageURL} boxes={this.state.boxes} />
-          </div>
-         }
+        </Route>
+       
          
   
      
 
     </div>
+      </Switch>
+    </Router>
   );
-}}
+}
 
 export default App;
+
+
