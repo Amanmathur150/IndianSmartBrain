@@ -1,4 +1,12 @@
 import "./Bgchangebutton.css";
+import {connect} from "react-redux" ;
+import {changeBG} from "../actions"
+
+
+
+const mapToDispacttoProps = (dispatch)=>({
+    changeBG:()=> dispatch(changeBG())
+})
 
 const Bgchange = ({changeBG}) =>{
     return (
@@ -8,4 +16,4 @@ const Bgchange = ({changeBG}) =>{
     )
 }
 
-export default Bgchange;
+export default connect(null,mapToDispacttoProps) (Bgchange);

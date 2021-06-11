@@ -1,21 +1,31 @@
-import {React} from "react"
+import {React} from "react" 
+import {connect} from  "react-redux"
 import { Link , useHistory } from "react-router-dom";
+import { logout } from "../../actions";
+
 import "./Navigation.css";
 
+const mapToDispacttoProps = (dispatch)=> {
+    return{
+        logout:(cb)=>dispatch(logout(cb))
+    }
+}
 
 
-const NavigationWithLogin = ({statusAuthenticate})=>{
+const NavigationWithLogin = ({logout,store})=>{
     let history = useHistory()
     
     
         return (
             <nav className="nav-bar" >
                 <p onClick={()=>{
-                    statusAuthenticate(false)
-                    sessionStorage.setItem("isAuth",false)
-                    sessionStorage.clear()
+
+                logout(()=>{
+                    
                     history.push("/")
-                }}
+                })
+                }
+                }
               
                 className="f3 link dim yellow underline pa3 pointer bold">Sign Out</p>
             </nav>
@@ -26,7 +36,7 @@ const NavigationWithLogin = ({statusAuthenticate})=>{
 
 
 
-const NavigationWithOutLogin = ()=>{
+export const NavigationWithOutLogin = ()=>{
         return (
 
             
@@ -51,8 +61,8 @@ const NavigationWithOutLogin = ()=>{
         )
 
     
-    
+        
 }
 
 
-export {NavigationWithLogin,NavigationWithOutLogin};
+export default connect(null,mapToDispacttoProps)(NavigationWithLogin);

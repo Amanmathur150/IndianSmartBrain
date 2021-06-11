@@ -1,63 +1,27 @@
-import { useState} from 'react';
+
 import Tilt from 'react-tilt';
 import "./SignUP.css"
+import {connect} from "react-redux"
 import { useHistory } from 'react-router-dom';
+import {setEmailSignUp,setPasswordSignUp,setNameSignUp,actionSumbitsignup} from "../../actions"
+
+const mapToStatetoProps = (states) =>({
+    name : states.changeSignUp.SignUp_Name,
+    email : states.changeSignUp.SignUp_Email,
+    password : states.changeSignUp.SignUp_Password,
+    error : states.changeSignUp.SignUp_Message,
+})
+const mapToDispacttoProps = (dispatch) =>({
+    changename: (event)=> dispatch(setNameSignUp(event.target.value)),
+    changeemail : (event)=> dispatch(setEmailSignUp(event.target.value)),
+    changepassword:  (event)=> dispatch(setPasswordSignUp(event.target.value)),
+    sumbitsignup : (cb) => dispatch(actionSumbitsignup(cb))
+})
 
 
 
-function SignUP(props){
-            let [name,setname] = useState(""); 
-            let [email,setemail] = useState(""); 
-            let  [password,setpassword]= useState(""); 
-            let [error,seterror] = useState(""); 
-            let history = useHistory()
-           
-        
-    
-
-    const changename =(event)=>{
-        setname(event.target.value)
-        
-    }
-
-    const changeemail=(event)=>{
-        setemail(event.target.value)
-        
-    }
-
-    const changepassword=(event)=>{
-        setpassword(event.target.value)
-        
-    }
-
-    let sumbitsignup=(cb)=>{      
-        
-        fetch("https://polar-inlet-90495.herokuapp.com/signup",{
-            method: "post",
-            headers: {"Content-Type" : "application/json" },
-            body: JSON.stringify({
-                email: email ,
-                password : password,
-                name : name
-            })
-        }).then(res=>res.json()).then(data =>{
-            props.loadUser(data) 
-            if(data === "Please Submit valid information"){
-                seterror("Please Submit valid information")
-            }else if (data === "Please Submit Valid Email"){
-                seterror("Please Submit Valid Email")
-                
-            }
-            else{
-                props.statusAuthenticate(true)
-                sessionStorage.setItem("isAuth",true)
-                cb()
-            }
-            
-
-            
-        })
-}
+function SignUP({error,changename,changeemail,changepassword,sumbitsignup}){
+        let history = useHistory()
     
         return (
             <div className="center sizes-mobiles">
@@ -84,9 +48,8 @@ function SignUP(props){
                                 </fieldset>
                                 <div className="">
                                 <button onClick={()=>{
-
-
-                                sumbitsignup(()=>{
+                                    
+                                    sumbitsignup(()=>{
                                     history.push("/welcome")
                                 })
 
@@ -108,4 +71,4 @@ function SignUP(props){
 
 
 
-export default SignUP;
+export default connect(mapToStatetoProps,mapToDispacttoProps) (SignUP);

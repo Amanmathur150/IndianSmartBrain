@@ -1,53 +1,67 @@
-import {   React , useState } from 'react';
+// import {   React , useState } from 'react';
+import {connect} from "react-redux"; 
 import { Link, useHistory } from 'react-router-dom';
 import Tilt from 'react-tilt';
 import "./Signin.css"
 import "react-router-dom";
+import {setEmailSignIn,setPasswordSignIn,signIn} from "../../actions"
 
 
-function Signin({loadUser, statusAuthenticate }){
+const mapToStatetoProps =  (states) => ({
+    email : states.changeSignIn.SignIn_Email,
+    password : states.changeSignIn.SignIn_Password,
+    message : states.changeSignIn.SignIn_Message,
+})
+const mapToDispacttoProps =  (dispatch) => ({
+    OnEmailChange : (event)=> dispatch(setEmailSignIn(event.target.value)),
+    OnPasswordChange : (event)=> dispatch(setPasswordSignIn(event.target.value)),
+    signIn : (cb) => dispatch(signIn(cb))
+})
+
+
+function Signin({OnEmailChange,OnPasswordChange,signIn,message}){
     
-    let [email,setemail]= useState("") ; 
-    let  [password,setpassword]= useState("") ; 
-    let [message,setmessage] = useState("") ; 
+    // let [email,setemail]= useState("") ; 
+    // let  [password,setpassword]= useState("") ; 
+    // let [message,setmessage] = useState("") ; 
     let history = useHistory()
          
         
 
 
-    const OnEmailChange = (event) =>{
-        setemail(event.target.value)
+    // const OnEmailChange = (event) =>{
+    //     setemail(event.target.value)
         
-    }
+    // }
 
-    const OnPasswordChange = (event) =>{
-        setpassword(event.target.value)
-    }
+    // const OnPasswordChange = (event) =>{
+    //     setpassword(event.target.value)
+    // }
 
-    const signIn = async (cb) => {
+    // const signIn = async (cb) => {
         
-        let res  = await fetch("https://polar-inlet-90495.herokuapp.com/signin",{
-            method: "POST",
-            headers: {"Content-Type" : "application/json" },
-            body: JSON.stringify({
-                email: email ,
-                password :password
-            })
-        }) 
-        let user = await res.json()
+    //     let res  = await fetch("https://polar-inlet-90495.herokuapp.com/signin",{
+    //         method: "POST",
+    //         headers: {"Content-Type" : "application/json" },
+    //         body: JSON.stringify({
+    //             email: email ,
+    //             password :password
+    //         })
+    //     }) 
+    //     let user = await res.json()
         
             
        
-        if (user === "Email and Password Is not valid "){
-            setmessage("Email And PassWord Is invalid")
-        }else{
-            loadUser(user)
-            statusAuthenticate(true)
-            sessionStorage.setItem("isAuth",true)
-                cb()
+    //     if (user === "Email and Password Is not valid "){
+    //         setmessage("Email And PassWord Is invalid")
+    //     }else{
+    //         loadUser(user)
+    //         statusAuthenticate(true)
+    //         sessionStorage.setItem("isAuth",true)
+    //             cb()
                 
-            }
-        }
+    //         }
+    //     }
     
 
     
@@ -93,4 +107,4 @@ function Signin({loadUser, statusAuthenticate }){
 
 
 
-export default Signin;
+export default  connect(mapToStatetoProps,mapToDispacttoProps) (Signin);

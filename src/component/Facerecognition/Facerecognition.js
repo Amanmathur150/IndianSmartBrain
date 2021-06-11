@@ -1,6 +1,14 @@
+import {connect} from "react-redux"
 import "./Facerecognition.css"
 import Boxbox from "./Boxbox.js"
 
+const mapToStatetoProps = (state) =>{
+    return {
+        imageURL: state.imageURL.imageURL,
+        boxes: state.faceBoxes.boxes
+      
+    }
+}
 
 const Facerecognition = ({imageURL , boxes}) =>{
     return (
@@ -18,4 +26,4 @@ const Facerecognition = ({imageURL , boxes}) =>{
 }
 
 
-export default Facerecognition;
+export default connect(mapToStatetoProps,null)(Facerecognition);

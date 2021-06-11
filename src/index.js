@@ -1,13 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import {Provider} from "react-redux";
+import {createStore ,  applyMiddleware , combineReducers } from "redux"
+// import {createLogger} from "redux-logger";
+import thunkMiddleware from "redux-thunk"
 import App from './App';
 import "tachyons" ;
 import reportWebVitals from './reportWebVitals';
+import {changeSignIn,auth,changeSignUp,loadUsers_plz,background,imageURL,faceBoxes} from "./reducers"
+
+const rootReducer = combineReducers({changeSignIn,auth,changeSignUp,loadUsers_plz,background,imageURL,faceBoxes})
+
+// const logger = createLogger()
+
+export const store = createStore(rootReducer,applyMiddleware(thunkMiddleware))
+
 
 ReactDOM.render(
-  
-    <App />
+
+  <Provider store={store}>
+    <App store={store} />
+  </Provider>
   ,
   document.getElementById('root')
 );

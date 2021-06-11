@@ -1,4 +1,13 @@
 import "./Imageinput.css";
+import {connect} from "react-redux"
+import {ChangeImageURL,OnButtonClick} from "../../actions"
+
+const mapToDispacttoProps = (dispatch)=>{
+    return {
+        OnChange : (event)=>dispatch(ChangeImageURL(event.target.value)),
+        OnButtonClick : ()=>dispatch(OnButtonClick())
+    }
+}
 
 const Imageinput = ({ OnChange , OnButtonClick } ) =>{
     return (
@@ -12,4 +21,4 @@ const Imageinput = ({ OnChange , OnButtonClick } ) =>{
     )
 }   
 
-export default Imageinput;
+export default connect(null,mapToDispacttoProps)(Imageinput);
